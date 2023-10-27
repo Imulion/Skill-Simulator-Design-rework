@@ -12,11 +12,21 @@
 (function() {
     'use strict';
 
-      if (window.top === window.self) {
-        console.log("window IS self")}
-    else {
-        console.log(document);
-        GM_addStyle(`
+    function removeAllBr(parentNode) {
+        parentNode.childNodes.forEach(function(node) {
+              if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'BR') {
+                  parentNode.removeChild(node);
+              }
+        });
+    }
+
+    function insertAfter(newItem,existingItem) {
+        existingItem.parentNode.insertBefore(newItem,existingItem.nextSibling);
+    }
+
+    if (window.top !== window.self) {
+          //console.log(document);
+          GM_addStyle(`
             #defensegrid {
                 display: grid;
             }
@@ -25,13 +35,18 @@
                 content: 'Head + Chest + Arms + Waist + Legs';
                 grid-column: 1 / 13;
             }
+
             #f_bougu .sl {
-                width: 4em !important;
+                width: 9em !important;
             }
+
+            #f_bougu .sn2,
             #f_bougu .sn {
-                width: 7.5em !important;
+                width: 8em !important;
                 padding-left: 0.2em;
             }
+
+            #f_bougu .pt,
             #f_bougu .sp {
                 padding-right: 0.2em;
             }
@@ -44,19 +59,17 @@
         defense_grid.setAttribute("id","defensegrid");
         defense_grid.removeChild(defense_grid.firstChild);
         //var child_copy = Array.from(defensegrid.childNodes);
-        defense_grid.childNodes.forEach(function(node) {
-            if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'BR') {
-                defense_grid.removeChild(node);
-            }
-        });
+        removeAllBr(defense_grid);
+
+        defense_grid.parentNode.style.padding="10px 0";
 
         var lastHeadItem = document.getElementById("b_bukiS3");
         var armour_grid = lastHeadItem.parentNode;
 
         var spacingDiv = document.createElement("div");
         spacingDiv.style.gridColumn = "8 / 18";
+        insertAfter(spacingDiv,lastHeadItem);
 
-        armour_grid.insertBefore(spacingDiv,lastHeadItem.nextSibling);
         armour_grid.style.display="grid";
         armour_grid.style.gridTemplateColumns = "repeat(17, 1fr)";
         armour_grid.style.rowGap = "0.5em";
@@ -89,6 +102,20 @@
         var cuff_spacing_div = document.createElement("div");
 
         armour_grid.insertBefore(cuff_spacing_div,document.getElementById("b_cuffLv"));
+
+        var selected_item_name_span = document.getElementById("d_mei");
+        selected_item_name_span.style.gridColumn="2 / 6";
+
+        var selected_item_div = selected_item_name_span.parentNode;
+        selected_item_div.style.display="grid";
+        selected_item_div.style.gap="0.5em 0.1em";
+        selected_item_div.style.padding="10px 0";
+        removeAllBr(selected_item_div);
+
+        var hr_space = document.createElement("hr");
+        hr_space.style.clear="both";
+        insertAfter(hr_space,selected_item_div);
+
 
     }
 
